@@ -39,6 +39,7 @@ while True:
 
     end = input("Are you done with answering questions for now? ")
     if end.lower() == "yes":
+        print("/nThank you for trying MockTalk :) See you next time!")
         break
 
     else:
