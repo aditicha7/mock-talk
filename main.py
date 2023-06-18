@@ -27,6 +27,15 @@ from langchain import (
     SQLDatabaseChain,
 )
 
+from langchain.prompts import (
+    ChatPromptTemplate,
+    MessagesPlaceholder,
+    SystemMessagePromptTemplate,
+    HumanMessagePromptTemplate
+)
+from langchain.chains import ConversationChain
+from langchain.memory import ConversationBufferMemory
+
 import os
 
 #environmental variable
@@ -34,10 +43,31 @@ API_KEY = "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"
 os.environ["OPENAI_API_KEY"] = API_KEY
 os.environ["SERPAPI_API_KEY"] = "fcd27d3d2165e05a55c72e78206a097520eecee7c651fd3e5d88d3ef6b5992ce"
 
-chat = ChatOpenAI(temperature = 0.9)
-llm = OpenAI(openai_api_key = "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")
-llm = OpenAI(temperature = 0.9, model = "text-davinci-003")
-#gpt-3.5-turbo-0613
+chat = ChatOpenAI(temperature = 0.9, model = "gpt-3.5-turbo-0613")
+llm = ChatOpenAI(openai_api_key = "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")
+llm = ChatOpenAI(temperature = 0.9, model = "gpt-3.5-turbo-0613")
+
+template = ("You are an interview chatbot giving job seekers advice for an interview with {company} as {difficulty} {role} by {deadline}, by giving feedback and providing leet code or interview questions. ")
+system_message_prompt = SystemMessagePromptTemplate.from_template(template)
+human_template = "{text}"
+human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
+
+chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt])
+#chat_prompt.format_messages(text = print("Welcome to MockTalk.ai! We're here to help you prepare for any upcoming interviews that you may have. \nTo start off:\n"), deadline = input("When is the date of your interview (MM/DD/YYYY)?"), company = input("What is the company you are applying to: "), role = input("What is the role that you wish to apply as: "), difficulty = input("What is the experience level of the position: "))
+
+chain = LLMChain(llm = chat, prompt = chat_prompt)
+deadline = input("Welcome to MockTalk.ai! We're here to help you prepare for any upcoming interviews that you may have. \nTo start off:\nWhen is the date of your interview (MM/DD/YYYY)? "),
+company = input("What is the company you are applying to: ")
+role = input("What is the role that you wish to apply as: ")
+difficulty = input("What is the experience level of the position: ")
+
+prompt = ChatPromptTemplate.from_messages([
+    SystemMessagePromptTemplate.from_template(
+        "You are an interview chatbot giving job seekers advice for an interview with {company} as {difficulty} {role} by {deadline}, by giving feedback and providing leet code or interview questions. "
+    ),
+    MessagesPlaceholder(variable_name= ""),
+    HumanMessagePromptTemplate.from_template("{input}")
+])
 
 load_tools(["serpapi", "llm-math"], llm=llm)
 llm_math_chain = LLMMathChain.from_llm(llm=llm, verbose=True)
@@ -62,30 +92,19 @@ tools = [
         description="useful for when you need to answer questions about FooBar. Input should be in the form of a question containing full context",
     ),
 ]
-agent = initialize_agent(tools, chat, agent=AgentType.OPENAI_FUNCTIONS)
-
-template = "You are an interview chatbot giving job seekers advice for an interview with {company} as {difficulty} {role} by {deadline}, by giving feedback and providing leet code or interview questions. "
-system_message_prompt = SystemMessagePromptTemplate.from_template(template)
-human_template = "{text}"
-human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
-
-chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt])
-#chat_prompt.format_messages(text = print("Welcome to MockTalk.ai! We're here to help you prepare for any upcoming interviews that you may have. \nTo start off:\n"), deadline = input("When is the date of your interview (MM/DD/YYYY)?"), company = input("What is the company you are applying to: "), role = input("What is the role that you wish to apply as: "), difficulty = input("What is the experience level of the position: "))
-
-chain = LLMChain(llm = chat, prompt = chat_prompt)
-deadline = input("Welcome to MockTalk.ai! We're here to help you prepare for any upcoming interviews that you may have. \nTo start off:\nWhen is the date of your interview (MM/DD/YYYY)? "),
-company = input("What is the company you are applying to: ")
-role = input("What is the role that you wish to apply as: ")
-difficulty = input("What is the experience level of the position: ")
+agent = initialize_agent(tools, chat, agent=AgentType.OPENAI_FUNCTIONS, verbose=True)
 
 chain.run(
-    text = 'text',
+    text = "text",
     deadline = deadline,
     company = company,
     role = role,
     difficulty=difficulty,
-    prompt=f"Provide either a interview question based on {role} for a leetcode prompt based on {difficulty} and {role}. You are an interviewing me who wants to work at {company} as a {difficulty} {role}. Do not include both at the same time."
+   conversation = ConversationChain(memory=memory, prompt=prompt, llm = llm),
+    prompt=f"Provide either a interview question based on {role} for a leetcode prompt based on {difficulty} and {role}. You are an interviewing me who wants to work at {company} as a {difficulty} {role}. Do not include both at the same time.",
 )
+
+agent.run(f"Provide either a interview question based on {role} for a leetcode prompt based on {difficulty} and {role}. You are an interviewing me who wants to work at {company} as a {difficulty} {role}. Do not include both at the same time.")
 
 
 #"Then, you give feedback after their answer, and ask if they want to continue. Depending on their answer, you either stop the code when the user says no, or repeat this prompt when the user wants to continue."
