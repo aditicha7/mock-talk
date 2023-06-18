@@ -100,7 +100,6 @@ chain.run(
     company = company,
     role = role,
     difficulty=difficulty,
-   conversation = ConversationChain(memory=memory, prompt=prompt, llm = llm),
     prompt=f"Provide either a interview question based on {role} for a leetcode prompt based on {difficulty} and {role}. You are an interviewing me who wants to work at {company} as a {difficulty} {role}. Do not include both at the same time.",
 )
 
