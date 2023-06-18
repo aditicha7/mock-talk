@@ -1,7 +1,7 @@
 import os
 import openai
 
-API_KEY = "INSERT API KEY HERE"
+API_KEY = "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"
 
 openai.api_key = API_KEY
 
@@ -27,8 +27,7 @@ answer = input(interview_question["choices"][0]["text"])
 while True:
     question = openai.Completion.create(
         model="text-davinci-003",
-        prompt=f"How good was my response for an interview setting?\n"
-               f"Ask a follow up interview question.",
+        prompt=f"How good was my response for an interview setting? How can I improve on my response?",
         temperature=1,
         max_tokens=150,
         top_p=1.0,
@@ -39,7 +38,7 @@ while True:
     next_answer = input(question["choices"][0]["text"])
 
     end = input("Are you done with answering questions for now? ")
-    if end == "yes":
+    if end.lower() == "yes":
         break
 
     else:
