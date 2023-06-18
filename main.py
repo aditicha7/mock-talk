@@ -27,7 +27,7 @@ answer = input(interview_question["choices"][0]["text"])
 while True:
     question = openai.Completion.create(
         model="text-davinci-003",
-        prompt=f"How good was my response for an interview setting? How can I improve on my response?",
+        prompt=f"How good was my response ({answer}) for an interview setting? How can I improve on my response?",
         temperature=1,
         max_tokens=150,
         top_p=1.0,
@@ -35,7 +35,7 @@ while True:
         presence_penalty=0.0
     )
 
-    next_answer = input(question["choices"][0]["text"])
+    input(question["choices"][0]["text"])
 
     end = input("Are you done with answering questions for now? ")
     if end.lower() == "yes":
@@ -52,5 +52,5 @@ while True:
             presence_penalty=0.0
         )
 
-        next_answer = input(question["choices"][0]["text"])
+        answer = input(question["choices"][0]["text"])
 
