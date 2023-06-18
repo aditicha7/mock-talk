@@ -35,6 +35,7 @@ from langchain.prompts import (
 )
 from langchain.chains import ConversationChain
 from langchain.memory import ConversationBufferMemory
+from langchain.utilities import SerpAPIWrapper
 
 import os
 
@@ -91,8 +92,15 @@ tools = [
         func=db_chain.run,
         description="useful for when you need to answer questions about FooBar. Input should be in the form of a question containing full context",
     ),
+    Tool(
+        name = "Current Search",
+        func=search.run,
+        description="useful for when you need to answer questions about current events or the current state of the world"
+    ),
 ]
+memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
 agent = initialize_agent(tools, chat, agent=AgentType.OPENAI_FUNCTIONS, verbose=True)
+agent_chain = initialize_agent(tools, llm, agent=AgentType.CONVERSATIONAL_REACT_DESCRIPTION, verbose=True, memory=memory)
 
 chain.run(
     text = "text",
@@ -104,6 +112,7 @@ chain.run(
 )
 
 agent.run(f"Provide either a interview question based on {role} for a leetcode prompt based on {difficulty} and {role}. You are an interviewing me who wants to work at {company} as a {difficulty} {role}. Do not include both at the same time.")
+agent_chain.run(input="answer")
 
 
 #"Then, you give feedback after their answer, and ask if they want to continue. Depending on their answer, you either stop the code when the user says no, or repeat this prompt when the user wants to continue."
