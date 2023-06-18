@@ -1,8 +1,7 @@
 import os
 import openai
-import time
 
-API_KEY = "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"
+API_KEY = "INSERT API KEY HERE"
 
 openai.api_key = API_KEY
 
@@ -15,8 +14,7 @@ difficulty = input("What is the experience level of the position: ")
 
 interview_question = openai.Completion.create(
     model="text-davinci-003",
-    prompt=f"Do not include both at the same time. You are an interviewing someone who wants to work at {company} as a {difficulty} {role}. "
-           f"Provide either a {difficulty} interview question or a leetcode prompt.",
+    prompt=f"Do not include both at the same time. Provide either a {difficulty} interview question or a leetcode prompt. You are an interviewing me who wants to work at {company} as a {difficulty} {role}.",
     temperature=1,
     max_tokens=150,
     top_p=1.0,
@@ -26,15 +24,34 @@ interview_question = openai.Completion.create(
 
 answer = input(interview_question["choices"][0]["text"])
 
-question = openai.Completion.create(
-    model="text-davinci-003",
-    prompt=f"Based on {company}'s core values, how good was their response?\n"
-           f"Ask a follow up interview question.",
-    temperature=1,
-    max_tokens=150,
-    top_p=1.0,
-    frequency_penalty=0.0,
-    presence_penalty=0.0
-)
+while True:
+    question = openai.Completion.create(
+        model="text-davinci-003",
+        prompt=f"How good was my response for an interview setting?\n"
+               f"Ask a follow up interview question.",
+        temperature=1,
+        max_tokens=150,
+        top_p=1.0,
+        frequency_penalty=0.0,
+        presence_penalty=0.0
+    )
 
-next_answer = input(question["choices"][0]["text"])
+    next_answer = input(question["choices"][0]["text"])
+
+    end = input("Are you done with answering questions for now? ")
+    if end == "yes":
+        break
+
+    else:
+        question = openai.Completion.create(
+            model="text-davinci-003",
+            prompt=f"Ask a follow up interview question.",
+            temperature=1,
+            max_tokens=150,
+            top_p=1.0,
+            frequency_penalty=0.0,
+            presence_penalty=0.0
+        )
+
+        next_answer = input(question["choices"][0]["text"])
+
