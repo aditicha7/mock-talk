@@ -40,12 +40,12 @@ from langchain.utilities import SerpAPIWrapper
 import os
 
 #environmental variable
-API_KEY = "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"
+API_KEY = "INSERT API KEY HERE"
 os.environ["OPENAI_API_KEY"] = API_KEY
-os.environ["SERPAPI_API_KEY"] = "fcd27d3d2165e05a55c72e78206a097520eecee7c651fd3e5d88d3ef6b5992ce"
+os.environ["SERPAPI_API_KEY"] = "INSERT API KEY HERE"
 
 chat = ChatOpenAI(temperature = 0.9, model = "gpt-3.5-turbo-0613")
-llm = ChatOpenAI(openai_api_key = "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")
+llm = ChatOpenAI(openai_api_key = "INSERT API KEY HERE")
 llm = ChatOpenAI(temperature = 0.9, model = "gpt-3.5-turbo-0613")
 
 template = ("You are an interview chatbot giving job seekers advice for an interview with {company} as {difficulty} {role} by {deadline}, by giving feedback and providing leet code or interview questions. ")
@@ -114,6 +114,7 @@ chain.run(
 agent.run(f"Provide either a interview question based on {role} for a leetcode prompt based on {difficulty} and {role}. You are an interviewing me who wants to work at {company} as a {difficulty} {role}. Do not include both at the same time.")
 agent_chain.run(input="answer")
 
+#everything below is the blueprint
 
 #"Then, you give feedback after their answer, and ask if they want to continue. Depending on their answer, you either stop the code when the user says no, or repeat this prompt when the user wants to continue."
 
