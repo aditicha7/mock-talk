@@ -55,3 +55,8 @@ while True:
 
         answer = input(question["choices"][0]["text"])
 
+
+answer = input(question["choices"][0]["text"])
+
+print(response["choices"][0]["text"])
+#roles, type of coding, companies,
